@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>월세 받는 중</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans KR',sans-serif;background:#F2F4F6;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;color:#191F28}
+
+/* 헤더 */
+.hdr{background:#fff;padding:12px 20px 10px;border-bottom:1px solid #E5E8EB;position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;align-items:center;justify-content:space-between}
+.hdr-ttl{font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:#00C471;animation:lp 2s infinite}
+@keyframes lp{0%,100%{box-shadow:0 0 0 2px rgba(0,196,113,.3)}50%{box-shadow:0 0 0 5px rgba(0,196,113,.1)}}
+.hdr-ic{display:flex;gap:14px;color:#4E5968;font-size:18px}
+.hdr-bn{font-size:15px;font-weight:900;margin-top:3px}
+.hdr-bl{font-size:11px;color:#8B95A1}
+
+/* 씬 카드 */
+.card{margin:12px 16px;border-radius:20px;overflow:hidden;border:1px solid #E5E8EB;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.1)}
+
+/* 하늘 */
+.sky{height:90px;position:relative;overflow:hidden}
+.sky.morning{background:linear-gradient(180deg,#87CEEB,#B8DFF0 60%,#D4EDDA)}
+.sky.afternoon{background:linear-gradient(180deg,#4A90D9,#6BB3E8 60%,#87CEEB)}
+.sky.evening{background:linear-gradient(180deg,#C04B2A,#E8783A 40%,#F5A623)}
+.sky.night{background:linear-gradient(180deg,#06091A,#0D1829 60%,#1A2640)}
+.sky-sun{position:absolute;border-radius:50%;background:radial-gradient(circle,#FFF9B0,#FFD600);box-shadow:0 0 30px rgba(255,214,0,.6)}
+.sky-moon{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFF9E8,#F0D070);box-shadow:0 0 20px rgba(240,208,112,.5);display:none}
+.sky-moon::after{content:'';position:absolute;top:20%;left:40%;width:55%;height:55%;border-radius:50%;background:inherit;filter:brightness(.7)}
+.sky-star{position:absolute;background:white;border-radius:50%;animation:tw var(--d,3s) ease-in-out infinite var(--dl,0s)}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.sky-cloud{position:absolute;background:rgba(255,255,255,.82);border-radius:50px}
+
+/* 건물 영역 */
+.barea{position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;cursor:pointer;user-select:none;height:200px}
+.barea.morning{background:linear-gradient(180deg,#D4EDDA,#A8D5A2)}
+.barea.afternoon{background:linear-gradient(180deg,#87CEEB,#6AAF6A)}
+.barea.evening{background:linear-gradient(180deg,#E8B878,#5A7A3A)}
+.barea.night{background:linear-gradient(180deg,#1A2640,#0A1A0A)}
+.barea:active{filter:brightness(.95)}
+.barea svg{width:100%;height:200px;display:block;position:absolute;bottom:0}
+.chint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(25,31,40,.82);color:#fff;font-size:10px;font-weight:700;padding:4px 14px;border-radius:20px;white-space:nowrap;z-index:10;display:none}
+.boost-ind{position:absolute;top:10px;right:12px;background:rgba(255,107,35,.92);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;display:none;z-index:10}
+
+/* 수금가방 */
+.bag-sec{padding:14px 16px 12px;border-top:1px solid #E5E8EB;background:#fff}
+.bag-lbl{font-size:12px;color:#8B95A1;font-weight:500;margin-bottom:8px}
+.bag-row{display:flex;align-items:center;gap:14px}
+.bag-vis{flex-shrink:0;position:relative}
+.bag-full-tag{display:none;font-size:11px;font-weight:700;color:#D4A017;animation:bk 1s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.4}}
+.bag-num-area{flex:1;min-width:0}
+.bag-num{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.5px;white-space:nowrap;display:flex;align-items:baseline;gap:0}
+.bag-num .gray{color:#CCCCCC}
+.bag-num .gold{color:#D4A017}
+.bag-right{display:flex;align-items:center;gap:6px;margin-top:3px}
+.bag-unit{font-size:14px;color:#8B95A1;font-weight:500}
+.bag-bell{background:none;border:none;font-size:15px;cursor:pointer;padding:2px}
+
+/* 입주율 */
+.occ-row{padding:10px 16px;background:#fff;border-top:1px solid #E5E8EB;display:flex;align-items:center;gap:10px}
+.occ-l{font-size:12px;font-weight:700;color:#00C471;white-space:nowrap;min-width:58px}
+.occ-trk{flex:1;height:8px;background:#F2F4F6;border-radius:4px;overflow:hidden}
+.occ-bar{height:100%;background:linear-gradient(90deg,#00C471,#6FCF97);border-radius:4px;transition:width .5s}
+.occ-r{font-size:12px;font-weight:700;color:#F04452;white-space:nowrap;text-align:right}
+.wait-chip{background:rgba(49,130,246,.1);color:#3182F6;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;cursor:pointer;display:none;white-space:nowrap}
+
+/* 광고 버튼 */
+.ad-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#E5E8EB;border-top:1px solid #E5E8EB}
+.ad-btn{background:#fff;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:background .15s;position:relative}
+.ad-btn:active{background:#F8F9FA}
+.ad-ic{font-size:20px}
+.ad-lbl{font-size:12px;font-weight:700;text-align:center}
+.ad-sub{font-size:10px;color:#8B95A1;text-align:center}
+.ad-bdg{position:absolute;top:8px;right:8px;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px}
+.ad-bdg.free{background:#00C471}
+.ad-bdg.paid{background:#3182F6}
+
+/* 금고에 넣기 버튼 */
+.vbtn-wrap{padding:10px 16px 12px;background:#fff;border-top:1px solid #F2F4F6}
+.vbtn{width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#1E6FCC,#3182F6);color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.vbtn:active{opacity:.85}
+.vbtn.dim{background:#E5E8EB;color:#8B95A1;cursor:not-allowed}
+.pill{background:rgba(255,255,255,.25);font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px}
+
+/* 피드 광고 */
+.feed{margin:10px 16px;border-radius:16px;overflow:hidden;border:1px solid #E5E8EB;background:#fff;cursor:pointer}
+.feed-hd{padding:11px 14px 5px;display:flex;align-items:center;gap:9px}
+.feed-logo{width:32px;height:32px;border-radius:8px;background:#F2F4F6;display:flex;align-items:center;justify-content:center;font-size:15px}
+.feed-nm{font-size:13px;font-weight:700}
+.feed-tg{font-size:10px;color:#8B95A1}
+.feed-ttl{font-size:13px;font-weight:700;padding:0 14px 2px}
+.feed-dsc{font-size:11px;color:#4E5968;padding:0 14px 8px}
+.feed-img{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:38px}
+.feed-cta{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#F8F9FA;font-size:12px;font-weight:700}
+
+/* 봉투 배너 */
+.env-ban{margin:0 16px 10px;border-radius:16px;background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border:1px solid rgba(212,160,23,.2);padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.env-ban:active{opacity:.9}
+.env-ic{width:40px;height:40px;border-radius:12px;background:rgba(212,160,23,.15);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.env-info{flex:1}
+.env-ttl{font-size:13px;font-weight:700}
+.env-dsc{font-size:11px;color:#4E5968;margin-top:1px}
+.env-rwd{font-size:15px;font-weight:900;color:#D4A017;white-space:nowrap}
+.env-pill{background:#3182F6;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;margin-left:4px}
+
+/* 액션 카드 */
+.acs{margin:0 16px 10px;display:flex;flex-direction:column;gap:8px}
+.ac{background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #E5E8EB;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .15s}
+.ac:active{background:#F8F9FA}
+.ac.gold{background:linear-gradient(135deg,#FFFBF0,#FFF3DC);border-color:rgba(212,160,23,.25)}
+.ac.locked{opacity:.4;cursor:not-allowed}
+.ac-ic{width:44px;height:44px;border-radius:12px;background:#F2F4F6;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ac-ic.g{background:rgba(212,160,23,.12)}
+.ac-ic.p{background:rgba(155,89,182,.1)}
+.ac-info{flex:1}
+.ac-ttl{font-size:13px;font-weight:700}
+.ac-dsc{font-size:11px;color:#8B95A1;margin-top:2px}
+.ac-cst{font-size:12px;font-weight:700;color:#D4A017;margin-top:2px}
+.ac-arr{font-size:16px;color:#8B95A1}
+
+/* 금고 카드 */
+.vault-card{margin:0 16px 10px;background:#fff;border-radius:16px;padding:16px;border:1px solid #E5E8EB;cursor:pointer}
+.vault-card:active{background:#F8F9FA}
+.vc-top{display:flex;align-items:center;gap:12px;margin-bottom:3px}
+.vc-ic{width:44px;height:44px;border-radius:12px;background:rgba(212,160,23,.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.vc-main{font-size:16px;font-weight:900}
+.vc-sub{font-size:12px;color:#8B95A1;margin-left:56px}
+
+/* 모달 */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:20px 24px 50px;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ov.show .modal{transform:translateY(0)}
+.mh{width:36px;height:4px;background:#E5E8EB;border-radius:2px;margin:0 auto 18px}
+.mt{font-size:19px;font-weight:900;text-align:center;margin-bottom:4px}
+.ms{font-size:13px;color:#4E5968;text-align:center;margin-bottom:18px}
+.ms b{color:#3182F6}
+.me{text-align:center;font-size:60px;margin-bottom:14px}
+.db{background:#F8F9FA;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #E5E8EB;font-size:13px}
+.dr:last-child{border:none;padding-bottom:0}
+.dl{color:#4E5968}
+.dv{font-weight:700}
+.dv.up{color:#00C471}
+.dv.gd{color:#D4A017}
+.dv.rd{color:#F04452}
+.mbs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mbs.one{grid-template-columns:1fr}
+.bc{padding:13px;border-radius:12px;border:1px solid #E5E8EB;background:#fff;font-size:14px;font-weight:700;color:#4E5968;cursor:pointer;font-family:inherit}
+.bo{padding:13px;border-radius:12px;border:none;background:#3182F6;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.bo:disabled{opacity:.35;cursor:not-allowed}
+.bo:not(:disabled):active{opacity:.85}
+.bo.gd{background:linear-gradient(135deg,#D4A017,#F5C842);color:#000}
+
+/* 운세 */
+.fbox{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;border:1px solid rgba(212,160,23,.2);display:none}
+.ftxt{font-size:15px;font-weight:700;line-height:1.7;white-space:pre-line}
+.ftag{display:inline-block;margin-top:10px;background:rgba(212,160,23,.15);color:#D4A017;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+
+/* 색상 선택 */
+.cols{display:flex;gap:12px;justify-content:center;margin-bottom:16px}
+.co{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
+.co.sel{border-color:#191F28;transform:scale(1.15)}
+
+/* 환전 감성 */
+.exfeel{background:linear-gradient(135deg,#F0FFF4,#DCFCE7);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center;border:1px solid rgba(0,196,113,.2)}
+.exfeel p{font-size:14px;font-weight:700;line-height:1.5}
+
+/* 파티클/플로트/토스트 */
+.ptcl{position:fixed;pointer-events:none;font-size:18px;animation:pf .8s ease-out forwards;z-index:500}
+@keyframes pf{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.5)}}
+.flt{position:fixed;pointer-events:none;font-size:15px;font-weight:900;color:#D4A017;animation:fu 1s ease-out forwards;z-index:400}
+@keyframes fu{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-55px)}}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(25,31,40,.9);color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;z-index:300;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.pad{height:30px}
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-ttl"><div class="dot"></div>월세 받는 중</div>
+    <div class="hdr-ic"><span>🔔</span><span>⋯</span></div>
+  </div>
+  <div class="hdr-bn" id="hdrBn">원룸</div>
+  <div class="hdr-bl">내 건물</div>
+</div>
+
+<div class="card">
+  <!-- 하늘 -->
+  <div class="sky" id="sky"></div>
+
+  <!-- 건물 영역 -->
+  <div class="barea" id="bArea" onclick="onBldClick(event)">
+    <div class="chint" id="chint">광고 보고 한 번 더 누를 수 있어요</div>
+    <div class="boost-ind" id="boostInd">⚡ --:--</div>
+
+    <!-- Lv1 원룸 -->
+    <svg id="bLv1" viewBox="0 0 320 200">
+      <rect x="0" y="188" width="320" height="12" fill="#6B8C5A" opacity=".5"/>
+      <ellipse cx="160" cy="192" rx="65" ry="6" fill="rgba(0,0,0,.12)"/>
+      <polygon points="90,95 160,58 230,95" fill="#9A9080"/>
+      <polygon points="93,95 160,61 227,95" fill="#AFA898"/>
+      <rect x="105" y="122" width="8" height="22" fill="#8A8078"/>
+      <rect x="102" y="120" width="14" height="5" rx="1" fill="#7A7068"/>
+      <rect x="98" y="93" width="124" height="95" fill="#C8C0B4"/>
+      <line x1="128" y1="113" x2="126" y2="140" stroke="#B0A898" stroke-width="1"/>
+      <line x1="163" y1="125" x2="166" y2="152" stroke="#B0A898" stroke-width="1"/>
+      <rect id="l1w0" x="108" y="105" width="38" height="28" rx="2" fill="#8A8880"/>
+      <rect x="108" y="105" width="38" height="28" rx="2" fill="none" stroke="#AAA098" stroke-width="1.5"/>
+      <line x1="127" y1="105" x2="127" y2="133" stroke="#AAA098" stroke-width="1"/>
+      <line x1="108" y1="119" x2="146" y2="119" stroke="#AAA098" stroke-width="1"/>
+      <rect id="l1w1" x="174" y="105" width="38" height="28" rx="2" fill="#8A8880"/>
+      <rect x="174" y="105" width="38" height="28" rx="2" fill="none" stroke="#AAA098" stroke-width="1.5"/>
+      <line x1="193" y1="105" x2="193" y2="133" stroke="#AAA098" stroke-width="1"/>
+      <line x1="174" y1="119" x2="212" y2="119" stroke="#AAA098" stroke-width="1"/>
+      <rect x="137" y="155" width="46" height="33" rx="3" fill="#7A6A58"/>
+      <rect x="141" y="158" width="17" height="26" rx="1" fill="#6A5A48"/>
+      <rect x="162" y="158" width="17" height="26" rx="1" fill="#6A5A48"/>
+      <circle cx="160" cy="172" r="3" fill="#C8A060"/>
+    </svg>
+
+    <!-- Lv2 빌라 -->
+    <svg id="bLv2" viewBox="0 0 320 200" style="display:none">
+      <rect x="0" y="186" width="320" height="14" fill="#6B8C5A" opacity=".5"/>
+      <ellipse cx="160" cy="190" rx="90" ry="7" fill="rgba(0,0,0,.1)"/>
+      <rect x="50" y="126" width="8" height="34" fill="#6B4F30"/>
+      <ellipse cx="54" cy="116" rx="18" ry="22" fill="#3A8A3A"/>
+      <ellipse cx="54" cy="110" rx="13" ry="17" fill="#4CAF50"/>
+      <rect x="72" y="44" width="176" height="144" fill="#C8A882"/>
+      <rect x="72" y="52" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <rect x="72" y="68" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <rect x="72" y="84" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <rect x="72" y="100" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <rect x="72" y="116" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <rect x="72" y="132" width="176" height="5" fill="rgba(0,0,0,.07)"/>
+      <polygon points="64,46 160,8 256,46" fill="#7A6040"/>
+      <polygon points="68,46 160,12 252,46" fill="#8A7050"/>
+      <rect x="68" y="44" width="184" height="8" fill="#9A8060"/>
+      <rect x="115" y="18" width="8" height="20" fill="#7A6040"/>
+      <rect x="112" y="16" width="14" height="5" rx="1" fill="#6A5030"/>
+      <rect x="196" y="22" width="8" height="18" fill="#7A6040"/>
+      <rect x="193" y="20" width="14" height="5" rx="1" fill="#6A5030"/>
+      <rect id="l2w0" x="84" y="56" width="44" height="32" rx="2" fill="#8A8880"/>
+      <rect x="84" y="56" width="44" height="32" rx="2" fill="none" stroke="#9A9888" stroke-width="1.5"/>
+      <line x1="106" y1="56" x2="106" y2="88" stroke="#9A9888" stroke-width="1"/>
+      <line x1="84" y1="72" x2="128" y2="72" stroke="#9A9888" stroke-width="1"/>
+      <rect id="l2w1" x="192" y="56" width="44" height="32" rx="2" fill="#8A8880"/>
+      <rect x="192" y="56" width="44" height="32" rx="2" fill="none" stroke="#9A9888" stroke-width="1.5"/>
+      <line x1="214" y1="56" x2="214" y2="88" stroke="#9A9888" stroke-width="1"/>
+      <line x1="192" y1="72" x2="236" y2="72" stroke="#9A9888" stroke-width="1"/>
+      <rect id="l2w2" x="84" y="98" width="44" height="32" rx="2" fill="#8A8880"/>
+      <rect x="84" y="98" width="44" height="32" rx="2" fill="none" stroke="#9A9888" stroke-width="1.5"/>
+      <line x1="106" y1="98" x2="106" y2="130" stroke="#9A9888" stroke-width="1"/>
+      <line x1="84" y1="114" x2="128" y2="114" stroke="#9A9888" stroke-width="1"/>
+      <rect id="l2w3" x="192" y="98" width="44" height="32" rx="2" fill="#8A8880"/>
+      <rect x="192" y="98" width="44" height="32" rx="2" fill="none" stroke="#9A9888" stroke-width="1.5"/>
+      <line x1="214" y1="98" x2="214" y2="130" stroke="#9A9888" stroke-width="1"/>
+      <line x1="192" y1="114" x2="236" y2="114" stroke="#9A9888" stroke-width="1"/>
+      <rect x="126" y="144" width="68" height="44" rx="3" fill="#6A5030"/>
+      <rect x="130" y="148" width="26" height="36" rx="1" fill="#5A4020"/>
+      <rect x="162" y="148" width="26" height="36" rx="1" fill="#5A4020"/>
+      <circle cx="159" cy="168" r="3.5" fill="#D4A017"/>
+    </svg>
+
+    <!-- Lv3 아파트 -->
+    <svg id="bLv3" viewBox="0 0 320 200" style="display:none">
+      <rect x="0" y="190" width="320" height="10" fill="#6B8C5A" opacity=".4"/>
+      <rect x="28" y="18" width="112" height="172" fill="#8090A0"/>
+      <rect x="28" y="18" width="112" height="7" fill="#6A7A8A"/>
+      <rect id="l3w0" x="38" y="29" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w1" x="94" y="29" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w2" x="38" y="61" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w3" x="94" y="61" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w4" x="38" y="93" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w5" x="94" y="93" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w6" x="38" y="125" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w7" x="94" y="125" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect x="28" y="162" width="112" height="28" fill="#607080"/>
+      <rect x="53" y="164" width="62" height="26" fill="#4A6070"/>
+      <rect x="180" y="32" width="112" height="158" fill="#8090A0"/>
+      <rect x="180" y="32" width="112" height="7" fill="#6A7A8A"/>
+      <rect id="l3w8" x="190" y="43" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w9" x="246" y="43" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w10" x="190" y="75" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w11" x="246" y="75" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w12" x="190" y="107" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w13" x="246" y="107" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w14" x="190" y="139" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect id="l3w15" x="246" y="139" width="38" height="24" rx="1" fill="#6A7A8A"/>
+      <rect x="180" y="174" width="112" height="16" fill="#607080"/>
+      <rect x="205" y="176" width="62" height="14" fill="#4A6070"/>
+    </svg>
+
+    <!-- Lv4 꼬마빌딩 -->
+    <svg id="bLv4" viewBox="0 0 320 200" style="display:none">
+      <rect x="0" y="192" width="320" height="8" fill="#6B8C5A" opacity=".4"/>
+      <ellipse cx="160" cy="194" rx="110" ry="5" fill="rgba(0,0,0,.08)"/>
+      <rect id="l4body" x="52" y="8" width="216" height="182" rx="3" fill="#7B8FA0"/>
+      <rect id="l4top" x="52" y="4" width="216" height="9" rx="2" fill="#5A7080"/>
+      <rect id="l4w0" x="65" y="18" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w1" x="107" y="18" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w2" x="179" y="18" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w3" x="221" y="18" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w4" x="65" y="50" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w5" x="107" y="50" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w6" x="179" y="50" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w7" x="221" y="50" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w8" x="65" y="82" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w9" x="107" y="82" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w10" x="179" y="82" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w11" x="221" y="82" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w12" x="65" y="114" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w13" x="107" y="114" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w14" x="179" y="114" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect id="l4w15" x="221" y="114" width="34" height="22" rx="1" fill="#5A7080"/>
+      <rect x="146" y="8" width="28" height="138" fill="rgba(0,0,0,.07)"/>
+      <rect id="l4lobby" x="52" y="148" width="216" height="42" fill="#4A6070"/>
+      <rect x="96" y="150" width="128" height="40" fill="#3A5060"/>
+      <rect x="126" y="152" width="68" height="38" fill="#2A4050"/>
+    </svg>
+
+    <!-- Lv5 랜드마크 -->
+    <svg id="bLv5" viewBox="0 0 320 200" style="display:none">
+      <rect x="0" y="194" width="320" height="6" fill="#6B8C5A" opacity=".3"/>
+      <rect x="157" y="-10" width="6" height="18" fill="#37474F"/>
+      <circle cx="160" cy="-8" r="4" fill="#FF4444"/>
+      <rect x="14" y="78" width="66" height="116" rx="2" fill="#607080"/>
+      <rect id="l5sw0" x="21" y="88" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw1" x="50" y="88" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw2" x="21" y="111" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw3" x="50" y="111" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw4" x="21" y="134" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw5" x="50" y="134" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect x="14" y="176" width="66" height="18" fill="#4A6070"/>
+      <rect x="240" y="58" width="66" height="136" rx="2" fill="#607080"/>
+      <rect id="l5sw6" x="247" y="68" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw7" x="276" y="68" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw8" x="247" y="91" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw9" x="276" y="91" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw10" x="247" y="114" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw11" x="276" y="114" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw12" x="247" y="137" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect id="l5sw13" x="276" y="137" width="22" height="15" rx="1" fill="#4A6070"/>
+      <rect x="240" y="176" width="66" height="18" fill="#4A6070"/>
+      <rect id="l5body" x="83" y="4" width="154" height="186" rx="3" fill="#546E7A"/>
+      <rect id="l5top" x="83" y="0" width="154" height="8" rx="2" fill="#37474F"/>
+      <rect x="83" y="4" width="36" height="186" fill="rgba(255,255,255,.05)" rx="2"/>
+      <rect id="l5w0" x="90" y="12" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w1" x="122" y="12" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w2" x="172" y="12" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w3" x="204" y="12" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w4" x="90" y="32" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w5" x="122" y="32" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w6" x="172" y="32" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w7" x="204" y="32" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w8" x="90" y="52" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w9" x="122" y="52" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w10" x="172" y="52" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w11" x="204" y="52" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w12" x="90" y="72" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w13" x="122" y="72" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w14" x="172" y="72" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w15" x="204" y="72" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w16" x="90" y="92" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w17" x="122" y="92" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w18" x="172" y="92" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w19" x="204" y="92" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w20" x="90" y="112" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w21" x="122" y="112" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w22" x="172" y="112" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w23" x="204" y="112" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w24" x="90" y="132" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w25" x="122" y="132" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w26" x="172" y="132" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect id="l5w27" x="204" y="132" width="26" height="14" rx="1" fill="#37474F"/>
+      <rect x="83" y="152" width="154" height="38" fill="#37474F"/>
+      <rect x="108" y="154" width="104" height="36" fill="#263238"/>
+      <rect x="128" y="156" width="64" height="34" fill="#1A2A30"/>
+      <text id="l5name" x="160" y="176" text-anchor="middle" fill="rgba(255,255,255,.75)" font-size="9" font-weight="bold" font-family="sans-serif">LANDMARK</text>
+    </svg>
+  </div>
+
+  <!-- 수금가방 -->
+  <div class="bag-sec">
+    <div class="bag-lbl">수금가방에 모인 봉투 <span class="bag-full-tag" id="bagFullTag">💰 가득 찼어요!</span></div>
+    <div class="bag-row">
+      <!-- 가방 SVG -->
+      <!-- 가방 클릭 시 알림 설정 팝업 -->
+      <div class="bag-vis" onclick="showM('bagAlertM')" style="cursor:pointer">
+        <svg viewBox="0 0 54 60" width="54" height="60">
+          <path d="M18,20 Q18,12 27,12 Q36,12 36,20" fill="none" stroke="#8B6914" stroke-width="3" stroke-linecap="round"/>
+          <rect x="8" y="20" width="38" height="32" rx="5" fill="#D4A017"/>
+          <rect x="8" y="20" width="38" height="32" rx="5" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+          <rect x="22" y="28" width="10" height="8" rx="2" fill="#B8860B"/>
+          <circle cx="27" cy="32" r="2" fill="#8B6914"/>
+          <g id="bagEnvG"></g>
+        </svg>
+      </div>
+      <!-- 숫자 + 단위 한 줄 -->
+      <div class="bag-num-area">
+        <div style="display:flex;align-items:baseline;gap:5px;flex-wrap:nowrap">
+          <div class="bag-num" id="bagNum"><span class="gray">0.000000</span></div>
+          <span class="bag-unit">장</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 입주율 -->
+  <div class="occ-row">
+    <span class="occ-l">입주 <span id="occPct">10</span>%</span>
+    <div class="occ-trk"><div class="occ-bar" id="occBar" style="width:10%"></div></div>
+    <span class="occ-r">공실 <span id="vacPct">90</span>%<span class="wait-chip" id="waitChip" onclick="showM('waitM')">입주 대기자 있음</span></span>
+  </div>
+
+  <!-- 광고 버튼 -->
+  <div class="ad-row">
+    <div class="ad-btn" onclick="doOccAd()">
+      <span class="ad-bdg free" id="occBadge">무료</span>
+      <div class="ad-ic">📣</div>
+      <div class="ad-lbl">세입자 구하기</div>
+      <div class="ad-sub" id="occSub">입주율 늘리기</div>
+    </div>
+    <div class="ad-btn" onclick="showSpeedM()">
+      <span class="ad-bdg paid">AD</span>
+      <div class="ad-ic">⚡</div>
+      <div class="ad-lbl">빠르게 모으기</div>
+      <div class="ad-sub">속도 ×2 / 최대 2시간</div>
+    </div>
+  </div>
+
+  <!-- 금고에 넣기 -->
+  <div class="vbtn-wrap">
+    <button class="vbtn dim" id="vaultBtn" onclick="showVaultM()">
+      🏦 금고에 넣기 <span class="pill">AD</span>
+    </button>
+  </div>
+</div>
+
+<!-- 배너 광고 -->
+<div class="feed">
+  <div class="feed-hd">
+    <div class="feed-logo">🏗️</div>
+    <div><div class="feed-nm">래미안 더 원</div><div class="feed-tg">광고</div></div>
+  </div>
+  <div class="feed-ttl">강남 마지막 신규 분양</div>
+  <div class="feed-dsc">지금 바로 청약 신청하세요</div>
+  <div class="feed-img" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB)">🏙️</div>
+  <div class="feed-cta"><span>더 알아보기</span><span>›</span></div>
+</div>
+
+<!-- 봉투 배너 -->
+<div class="env-ban" onclick="doEnvAd()">
+  <div class="env-ic">✉️</div>
+  <div class="env-info">
+    <div class="env-ttl">광고 보고 봉투 바로 받기<span class="env-pill">AD</span></div>
+    <div class="env-dsc">수금가방에 즉시 +1장</div>
+  </div>
+  <div class="env-rwd">+1장</div>
+</div>
+
+<!-- 액션 카드 -->
+<div class="acs">
+  <div class="ac gold" id="upgradeCard" onclick="showUpgM()">
+    <div class="ac-ic g">🔨</div>
+    <div class="ac-info">
+      <div class="ac-ttl" id="upgTtl">빌라로 증축하기</div>
+      <div class="ac-dsc" id="upgDsc">월세 받는 속도 ×1.20</div>
+      <div class="ac-cst" id="upgCst">봉투 30장 필요</div>
+    </div>
+    <div class="ac-arr">›</div>
+  </div>
+  <div class="ac" onclick="showFortuneM()">
+    <div class="ac-ic p">🔮</div>
+    <div class="ac-info">
+      <div class="ac-ttl">오늘의 부동산 운세</div>
+      <div class="ac-dsc">오늘 내 부동산 기운은?</div>
+      <div class="ac-cst" id="fortuneCst">첫 번째는 무료!</div>
+    </div>
+    <div class="ac-arr">›</div>
+  </div>
+</div>
+
+<!-- 금고 카드 -->
+<div class="vault-card" onclick="showExM()">
+  <div class="vc-top">
+    <div class="vc-ic">🏦</div>
+    <div class="vc-main">금고에 봉투 <span id="vaultDisp">1000</span>장 있어요</div>
+  </div>
+  <div class="vc-sub">봉투 10장을 토스포인트 10원으로 바꿀 수 있어요</div>
+</div>
+
+<!-- 친구 초대 카드 -->
+<div class="ac" onclick="showShareM()" style="margin:0 16px 10px;background:linear-gradient(135deg,#F0F7FF,#E8F0FF);border-color:rgba(49,130,246,.2)">
+  <div class="ac-ic" style="background:rgba(49,130,246,.1)">👥</div>
+  <div class="ac-info">
+    <div class="ac-ttl">친구에게 알리고 봉투 받기</div>
+    <div class="ac-dsc">친구가 앱 시작하면 나도 친구도 봉투 3장씩</div>
+    <div class="ac-cst" style="color:#3182F6">공유하기</div>
+  </div>
+  <div class="ac-arr">›</div>
+</div>
+
+<div class="pad"></div>
+
+<!-- 친구 초대 모달 -->
+<div class="ov" id="shareM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">친구에게 알리고 봉투 받기 👥</div>
+    <div class="ms">친구가 처음 시작하면 <b>나도 친구도 봉투 3장</b></div>
+    <div class="db">
+      <div class="dr"><span class="dl">내가 받는 봉투</span><span class="dv up">3장</span></div>
+      <div class="dr"><span class="dl">친구가 받는 봉투</span><span class="dv up">3장</span></div>
+      <div class="dr"><span class="dl">친구 1명당 1회만</span><span class="dv">중복 불가</span></div>
+    </div>
+    <div class="mbs one" style="margin-bottom:8px">
+      <button class="bo" style="background:#FEE500;color:#191F28" onclick="doShare('kakao')">카카오톡으로 공유</button>
+    </div>
+    <div class="mbs one" style="margin-bottom:8px">
+      <button class="bo" onclick="doShare('sms')">문자로 공유</button>
+    </div>
+    <div class="mbs one">
+      <button class="bc" onclick="closeM('shareM')">닫기</button>
+    </div>
+  </div>
+</div>
+<div class="ov" id="bagAlertM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">수금가방 알림</div>
+    <div class="ms">가득 차면 알려드릴게요</div>
+    <div class="me">💼</div>
+    <div class="mbs one"><button class="bo" onclick="closeM('bagAlertM');toast('🔔 알림 설정 완료!')">알림 받기</button></div>
+  </div>
+</div>
+
+<!-- 금고에 넣기 모달 -->
+<div class="ov" id="vaultM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">금고에 넣기</div>
+    <div class="ms">광고 <b>5초</b> 보고 수금가방 → 금고 이동</div>
+    <div class="db">
+      <div class="dr"><span class="dl">수금가방</span><span class="dv gd" id="bagAmtM">0장</span></div>
+      <div class="dr"><span class="dl">금고 이동</span><span class="dv up" id="moveAmtM">0장</span></div>
+      <div class="dr"><span class="dl">이동 후 수금가방에 남는 봉투</span><span class="dv" id="remainAmtM">0장</span></div>
+    </div>
+    <div class="mbs">
+      <button class="bc" onclick="closeM('vaultM')">취소</button>
+      <button class="bo" onclick="doVault()">광고 보고 넣기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 빠르게 모으기 모달 -->
+<div class="ov" id="speedM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">빠르게 모으기 ⚡</div>
+    <div class="ms">광고 <b>30초</b> → 속도 ×2 적용</div>
+    <div class="db">
+      <div class="dr"><span class="dl">1회 지속 시간</span><span class="dv up">1시간</span></div>
+      <div class="dr"><span class="dl">최대 누적</span><span class="dv">2시간</span></div>
+      <div class="dr"><span class="dl">현재 남은 시간</span><span class="dv" id="spdRem">없음</span></div>
+    </div>
+    <div class="mbs">
+      <button class="bc" onclick="closeM('speedM')">취소</button>
+      <button class="bo" id="spdBtn" onclick="doSpeed()">광고 보기 (30초)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 입주 대기자 모달 -->
+<div class="ov" id="waitM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">입주 대기자 현황</div>
+    <div class="ms">대기자가 있으면 공실이 생겨도 바로 채워져요</div>
+    <div class="db">
+      <div class="dr"><span class="dl">입주 대기자</span><span class="dv up" id="waitPct">0%</span></div>
+    </div>
+    <div class="mbs one"><button class="bo" onclick="closeM('waitM')">확인</button></div>
+  </div>
+</div>
+
+<!-- 증축 모달 -->
+<div class="ov" id="upgM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt" id="upgMtitle">빌라로 증축하기 🏗️</div>
+    <div class="ms">봉투 <span id="upgCostSpan">30</span>장을 사용해 월세 받는 속도를 높여요</div>
+    <div class="db">
+      <div class="dr"><span class="dl">현재 속도</span><span class="dv gd" id="upgCurSpd">×1.00</span></div>
+      <div class="dr"><span class="dl">증축 후 속도</span><span class="dv up" id="upgNxtSpd">×1.20</span></div>
+      <div class="dr"><span class="dl">필요 봉투 (금고)</span><span class="dv rd" id="upgNeed">30장</span></div>
+      <div class="dr"><span class="dl">보유 봉투</span><span class="dv" id="upgMy">0장</span></div>
+    </div>
+    <!-- 꼬마빌딩 색상 선택 -->
+    <div id="colorWrap" style="display:none">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;text-align:center">건물 색상 선택</div>
+      <div class="cols">
+        <div class="co sel" style="background:#E53935" id="col0" onclick="selCol(0)"></div>
+        <div class="co" style="background:#1E88E5" id="col1" onclick="selCol(1)"></div>
+        <div class="co" style="background:#ECEFF1;border-color:#CCC" id="col2" onclick="selCol(2)"></div>
+        <div class="co" style="background:#FDD835" id="col3" onclick="selCol(3)"></div>
+        <div class="co" style="background:#212121" id="col4" onclick="selCol(4)"></div>
+      </div>
+    </div>
+    <!-- 랜드마크 색상+이름 -->
+    <div id="lmWrap" style="display:none">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;text-align:center">건물 색상 선택</div>
+      <div class="cols">
+        <div class="co sel" style="background:#546E7A" id="lc0" onclick="selLc(0)"></div>
+        <div class="co" style="background:#1565C0" id="lc1" onclick="selLc(1)"></div>
+        <div class="co" style="background:#4A148C" id="lc2" onclick="selLc(2)"></div>
+        <div class="co" style="background:#B71C1C" id="lc3" onclick="selLc(3)"></div>
+        <div class="co" style="background:#212121" id="lc4" onclick="selLc(4)"></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:6px;text-align:center">건물 이름 <span style="font-size:11px;color:#8B95A1;font-weight:400">(한글 4자 / 영문 8자)</span></div>
+      <input id="bldName" type="text" placeholder="예: 하늘빌 / SKYHILL"
+        style="width:100%;padding:12px;border-radius:10px;border:1px solid #E5E8EB;font-size:14px;font-family:inherit;text-align:center"
+        oninput="limitName(this)"/>
+    </div>
+    <div class="mbs" style="margin-top:16px">
+      <button class="bc" onclick="closeM('upgM')">취소</button>
+      <button class="bo gd" id="upgConfirm" onclick="doUpg()">증축하기 🔨</button>
+    </div>
+  </div>
+</div>
+
+<!-- 운세 모달 -->
+<div class="ov" id="fortuneM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">오늘의 부동산 운세 🔮</div>
+    <!-- 운세 결과 (항상 위에, 내용 있을 때만 표시) -->
+    <div class="fbox" id="fbox">
+      <div class="ftxt" id="ftxt"></div>
+      <div class="ftag" id="ftag"></div>
+    </div>
+    <!-- 버튼 영역 -->
+    <div id="fbtns">
+      <div class="me">🔮</div>
+      <!-- 첫 번째: 무료 -->
+      <div id="ffreeWrap">
+        <div class="mbs one" style="margin-bottom:8px">
+          <button class="bo gd" onclick="doFortuneFree()">무료로 보기</button>
+        </div>
+        <div class="mbs one">
+          <button class="bc" onclick="closeM('fortuneM')">닫기</button>
+        </div>
+      </div>
+      <!-- 두 번째~: 봉투/광고 -->
+      <div id="fpaidWrap" style="display:none">
+        <div class="mbs" style="margin-bottom:8px">
+          <button class="bc" onclick="doFortuneEnv()">봉투 1장 쓰기</button>
+          <button class="bo" onclick="doFortuneAd()">광고 보고 확인</button>
+        </div>
+        <div class="mbs one">
+          <button class="bc" onclick="closeM('fortuneM')">닫기</button>
+        </div>
+      </div>
+    </div>
+    <!-- 결과 나왔을 때 닫기 -->
+    <div id="fcloseRow" style="display:none">
+      <div class="mbs one">
+        <button class="bc" onclick="closeM('fortuneM')">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 환전 모달 -->
+<div class="ov" id="exM">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">토스포인트로 전환</div>
+    <div class="exfeel"><p id="exFeel">🏢 건물주님의 첫 수익이에요!</p></div>
+    <div class="ms">봉투 <b>10장 → 토스포인트 10원</b></div>
+    <div class="db">
+      <div class="dr"><span class="dl">금고 봉투</span><span class="dv" id="exMy">0.000장</span></div>
+      <div class="dr"><span class="dl">전환 후 남는 봉투</span><span class="dv" id="exRem">0.000장</span></div>
+      <div class="dr"><span class="dl">받을 토스포인트</span><span class="dv gd" id="exPts">0원</span></div>
+    </div>
+    <div class="mbs">
+      <button class="bc" onclick="closeM('exM')">취소</button>
+      <button class="bo" id="exBtn" onclick="doEx()">광고 보고 전환 (30초)</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 데이터 ──
+const LVS=[
+  {lv:1,name:'원룸',    svgId:'bLv1',px:'l1',wins:2,  spd:1.00,upgCost:30, nxt:'빌라'},
+  {lv:2,name:'빌라',    svgId:'bLv2',px:'l2',wins:4,  spd:1.20,upgCost:60, nxt:'아파트'},
+  {lv:3,name:'아파트',  svgId:'bLv3',px:'l3',wins:16, spd:1.44,upgCost:120,nxt:'꼬마빌딩'},
+  {lv:4,name:'꼬마빌딩',svgId:'bLv4',px:'l4',wins:16, spd:1.73,upgCost:240,nxt:'내 건물'},
+  {lv:5,name:'랜드마크',svgId:'bLv5',px:'l5',wins:46, spd:2.07,upgCost:0,  nxt:''},
+];
+const FORS=[
+  {t:'오늘은 집을 보러 다니기 좋은 날이에요.\n발품이 결실을 맺을 거예요.',tag:'임장 운 ★★★★★'},
+  {t:'지금 사는 집에 감사하는 날이에요.\n내 공간이 얼마나 소중한지 느껴보세요.',tag:'주거 운 ★★★★'},
+  {t:'이사할 날을 고민 중이라면\n오늘 결정해도 좋은 날이에요.',tag:'이사 운 ★★★★★'},
+  {t:'계약서를 꼼꼼히 읽어야 하는 날이에요.\n작은 글씨도 놓치지 마세요.',tag:'계약 운 ★★★'},
+  {t:'좋은 세입자가 곧 나타날 거예요.\n공실 걱정 내려놓으세요.',tag:'세입자 운 ★★★★'},
+  {t:'오늘은 집 정리하기 딱 좋은 날이에요.\n비우면 새로운 것이 들어와요.',tag:'정리 운 ★★★★★'},
+  {t:'오늘은 부동산보다 사람에 투자하기 좋은 날이에요.',tag:'관계 운 ★★★★★'},
+  {t:'집 근처 숨은 맛집을 발견할 행운의 날이에요.',tag:'동네 운 ★★★★'},
+  {t:'오래된 집도 손보면 새집이 돼요.\n작은 변화가 큰 행복을 만들어요.',tag:'수리 운 ★★★★'},
+  {t:'좋은 이웃과 인사 나눠보세요.\n좋은 이웃이 좋은 집을 만들어요.',tag:'이웃 운 ★★★★'},
+];
+const EX_FEELS=['💰 월세 받는 건물주, 멋지지 않나요?','🎉 오늘도 월세가 들어왔네요!','🏆 진짜 건물주가 되어가고 있어요!','✨ 이 맛에 건물주 하는 거죠!'];
+const LV4C=[
+  {body:'#C62828',top:'#B71C1C',lobby:'#8B0000',win:'#8B1A1A'},
+  {body:'#1565C0',top:'#0D47A1',lobby:'#003c8f',win:'#1A3A7A'},
+  {body:'#ECEFF1',top:'#CFD8DC',lobby:'#B0BEC5',win:'#B0BEC5'},
+  {body:'#F9A825',top:'#F57F17',lobby:'#E65100',win:'#E65100'},
+  {body:'#212121',top:'#000000',lobby:'#111111',win:'#1A1A1A'},
+];
+const LV5C=['#546E7A','#1565C0','#4A148C','#B71C1C','#212121'];
+const WIN_IDS={
+  l1:['l1w0','l1w1'],
+  l2:['l2w0','l2w1','l2w2','l2w3'],
+  l3:['l3w0','l3w1','l3w2','l3w3','l3w4','l3w5','l3w6','l3w7','l3w8','l3w9','l3w10','l3w11','l3w12','l3w13','l3w14','l3w15'],
+  l4:['l4w0','l4w1','l4w2','l4w3','l4w4','l4w5','l4w6','l4w7','l4w8','l4w9','l4w10','l4w11','l4w12','l4w13','l4w14','l4w15'],
+  l5:['l5w0','l5w1','l5w2','l5w3','l5w4','l5w5','l5w6','l5w7','l5w8','l5w9','l5w10','l5w11','l5w12','l5w13','l5w14','l5w15','l5w16','l5w17','l5w18','l5w19','l5w20','l5w21','l5w22','l5w23','l5w24','l5w25','l5w26','l5w27','l5sw0','l5sw1','l5sw2','l5sw3','l5sw4','l5sw5','l5sw6','l5sw7','l5sw8','l5sw9','l5sw10','l5sw11','l5sw12','l5sw13'],
+};
+
+// ── 상태 ──
+let lvi=1, bag=0, vault=1000;
+let occ=10, wl=0, wAcc=0, oAcc=0;
+let boost=1, boostEnd=0;
+let bldFree=true, bldFreeEnd=0;
+let fUsed=false, firstEx=true;
+let occFreeDate='';
+let ci=0, lci=0;
+let lastT=Date.now();
+const MAX_BAG=6;
+const BPS=0.5/3600; // 봉투/초 (입주100%, Lv1 기준)
+const WD=100/14400; // 대기자 감소 %/초
+const OD=90/14400;  // 입주율 감소 %/초
+
+function lv(){return LVS[lvi-1];}
+
+// ── 가방 그래픽 ──
+function updateBagSvg(pct){
+  const g=document.getElementById('bagEnvG');
+  const step=pct>=100?5:pct>=80?4:pct>=60?3:pct>=40?2:pct>=20?1:0;
+  g.innerHTML='';
+  for(let i=0;i<step;i++){
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x','27');
+    t.setAttribute('y',String(38-i*7));
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','11');
+    t.textContent='✉';
+    t.setAttribute('fill','#E09A10');
+    g.appendChild(t);
+  }
+  document.getElementById('bagFullTag').style.display=pct>=100?'block':'none';
+}
+
+// ── 시간대 ──
+function setTime(){
+  const h=new Date().getHours();
+  const sky=document.getElementById('sky');
+  const ba=document.getElementById('bArea');
+  sky.querySelectorAll('.sky-star,.sky-cloud').forEach(e=>e.remove());
+  ['morning','afternoon','evening','night'].forEach(c=>{sky.classList.remove(c);ba.classList.remove(c);});
+  const cls=h>=6&&h<12?'morning':h>=12&&h<17?'afternoon':h>=17&&h<20?'evening':'night';
+  sky.classList.add(cls);ba.classList.add(cls);
+  let sun=document.getElementById('_sun');
+  if(!sun){sun=document.createElement('div');sun.id='_sun';sky.appendChild(sun);}
+  let moon=document.getElementById('_moon');
+  if(!moon){moon=document.createElement('div');moon.id='_moon';sky.appendChild(moon);}
+  if(cls==='night'){
+    sun.style.display='none';
+    moon.className='sky-moon';
+    moon.style.cssText='display:block;width:30px;height:30px;top:18px;right:44px';
+    for(let i=0;i<35;i++){
+      const s=document.createElement('div');s.className='sky-star';
+      const sz=Math.random()*2+1;
+      s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*85}%;--d:${2+Math.random()*3}s;--dl:${Math.random()*3}s`;
+      sky.appendChild(s);
+    }
+  } else {
+    moon.style.display='none';
+    sun.className='sky-sun';
+    const p=cls==='morning'?'top:18px;left:55px':cls==='afternoon'?'top:10px;left:calc(50% - 17px)':'top:30px;right:55px;left:auto';
+    sun.style.cssText=`display:block;width:34px;height:34px;${p}`;
+    if(cls==='afternoon'){
+      [{l:12,t:18,w:55,h:14},{l:55,t:24,w:75,h:16}].forEach(c=>{
+        const cl=document.createElement('div');cl.className='sky-cloud';
+        cl.style.cssText=`left:${c.l}%;top:${c.t}px;width:${c.w}px;height:${c.h}px`;
+        sky.appendChild(cl);
+      });
+    }
+  }
+}
+
+// ── 창문 ──
+function updateWins(){
+  const isN=document.getElementById('sky').classList.contains('night');
+  const ids=WIN_IDS[lv().px];if(!ids)return;
+  const lit=Math.round((occ/100)*ids.length);
+  const onC=['#FFE082','#FFF176','#B3E5FC','#80DEEA','#FFCC80'];
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(i<lit){
+      el.setAttribute('fill',isN?onC[i%onC.length]:'#B3E5FC');
+      el.style.filter=isN?`drop-shadow(0 0 4px ${onC[i%onC.length]})`:'';
+    } else {
+      const off=lvi===4?LV4C[ci].win:lvi===5?'#37474F':lvi===3?'#6A7A8A':'#8A8880';
+      el.setAttribute('fill',isN?'#0D1829':off);
+      el.style.filter='';
+    }
+  });
+}
+
+// ── 메인 루프 ──
+function tick(){
+  const now=Date.now(),dt=(now-lastT)/1000;lastT=now;
+
+  // 부스트
+  if(boost>1&&now>boostEnd){boost=1;document.getElementById('boostInd').style.display='none';}
+  if(boost>1){
+    const rem=Math.ceil((boostEnd-now)/1000);
+    document.getElementById('boostInd').textContent=`⚡ ${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
+    document.getElementById('boostInd').style.display='block';
+  }
+
+  // 건물 클릭 리프레시
+  if(!bldFree&&now>=bldFreeEnd){bldFree=true;document.getElementById('chint').style.display='none';}
+
+  // ★ 대기자/입주율 (정수 누산기 방식)
+  if(wl>0){
+    occ=100; // 대기자 있으면 입주율 100% 고정
+    wAcc+=WD*dt;
+    if(wAcc>=1){const d=Math.floor(wAcc);wl=Math.max(0,wl-d);wAcc-=d;}
+    if(wl<=0){wl=0;wAcc=0;document.getElementById('waitChip').style.display='none';}
+  } else {
+    if(occ>10){oAcc+=OD*dt;if(oAcc>=1){const d=Math.floor(oAcc);occ=Math.max(10,occ-d);oAcc-=d;}}
+  }
+
+  // 봉투 적립
+  bag=Math.min(bag+BPS*(occ/100)*lv().spd*boost*dt,MAX_BAG);
+
+  render();
+  requestAnimationFrame(tick);
+}
+
+function render(){
+  // ★ 숫자 강조: 정수≥1이면 정수만 금색, 나머지 회색
+  const s=bag.toFixed(6);
+  const dot=s.indexOf('.');
+  const intVal=parseInt(s.slice(0,dot));
+  const dec=s.slice(dot); // ".xxxxxx"
+  if(intVal>=1){
+    document.getElementById('bagNum').innerHTML=`<span class="gold">${intVal}</span><span class="gray">${dec}</span>`;
+  } else {
+    document.getElementById('bagNum').innerHTML=`<span class="gray">0${dec}</span>`;
+  }
+
+  // 가방 그래픽
+  const pct=Math.min(100,bag/MAX_BAG*100);
+  updateBagSvg(pct);
+  document.getElementById('vaultBtn').classList.toggle('dim',bag<1);
+
+  // 입주율 (정수)
+  document.getElementById('occPct').textContent=occ;
+  document.getElementById('vacPct').textContent=100-occ;
+  document.getElementById('occBar').style.width=occ+'%';
+  document.getElementById('waitChip').style.display=wl>0?'inline':'none';
+  document.getElementById('waitPct').textContent=wl+'%'; // 모달 실시간
+
+  // 세입자 구하기 배지 (하루 1회 무료)
+  const today=new Date().toDateString();
+  const isFree=occFreeDate!==today;
+  const bdg=document.getElementById('occBadge');
+  bdg.textContent=isFree?'무료':'AD';
+  bdg.className='ad-bdg '+(isFree?'free':'paid');
+
+  // 세입자 구하기 설명
+  let sub='입주율 늘리기';
+  if(occ===100&&wl<100)sub='입주 대기자 모집';
+  else if(occ===100&&wl>=100)sub='공실 발생 시 알림 설정';
+  document.getElementById('occSub').textContent=sub;
+
+  // 금고
+  document.getElementById('vaultDisp').textContent=Math.floor(vault);
+  document.getElementById('hdrBn').textContent=lv().name;
+
+  // 증축 카드
+  if(lvi>=5){
+    document.getElementById('upgTtl').textContent='최고 등급 달성! 🏆';
+    document.getElementById('upgDsc').textContent='';
+    document.getElementById('upgCst').textContent='';
+    document.getElementById('upgradeCard').classList.add('locked');
+  } else {
+    const nxt=LVS[lvi];
+    const can=vault>=lv().upgCost;
+    document.getElementById('upgTtl').textContent=nxt.name+josa(nxt.name)+' 증축하기';
+    document.getElementById('upgDsc').textContent='월세 받는 속도 ×'+nxt.spd.toFixed(2);
+    document.getElementById('upgCst').textContent=can?'✅ 증축 가능!':'봉투 '+lv().upgCost+'장 필요 (금고)';
+    document.getElementById('upgradeCard').classList.toggle('locked',!can);
+  }
+  updateWins();
+}
+
+// ── 건물 클릭 ──
+function onBldClick(e){
+  const now=Date.now();
+  if(bldFree){
+    bldFree=false;bldFreeEnd=now+7200000;
+    bag=Math.min(bag+0.5,MAX_BAG);
+    envPtcl();flt('+0.5봉투',e.clientX,e.clientY);
+    toast('수금가방 +0.5장');
+    document.getElementById('chint').style.display='block';
+  } else {
+    bag=Math.min(bag+0.5,MAX_BAG);
+    envPtcl();flt('+0.5봉투',e.clientX,e.clientY);
+    toast('수금가방 +0.5장');
+  }
+}
+
+// ── 세입자 구하기 ──
+function doOccAd(){
+  const today=new Date().toDateString();
+  occFreeDate=today; // 무료 사용 처리
+  if(occ<100){occ=Math.min(100,occ+50);oAcc=0;toast('📣 입주율 +50%!');}
+  else if(wl<100){wl=Math.min(100,wl+50);wAcc=0;document.getElementById('waitChip').style.display='inline';toast('👥 입주 대기자 +50%!');}
+  else{toast('✅ 공실 발생 시 알림 설정됐어요!');}
+}
+
+// ── 금고에 넣기 ──
+function showVaultM(){
+  if(bag<1){toast('봉투 1장 이상 모여야 금고에 넣을 수 있어요');return;}
+  const intPart=Math.floor(bag);
+  const remain=bag-intPart;
+  document.getElementById('bagAmtM').textContent=bag.toFixed(6)+'장';
+  document.getElementById('moveAmtM').textContent=intPart+'장';
+  document.getElementById('remainAmtM').textContent=remain.toFixed(6)+'장';
+  showM('vaultM');
+}
+function doVault(){
+  closeM('vaultM');
+  const intPart=Math.floor(bag); // 정수 부분만 금고로
+  if(intPart<1){toast('봉투 1장 이상 모여야 금고에 넣을 수 있어요');return;}
+  vault+=intPart;
+  bag=bag-intPart; // 소수 부분은 수금가방에 남음
+  toast('🏦 '+intPart+'장 금고로!');
+}
+
+// ── 빠르게 모으기 ──
+function showSpeedM(){
+  const now=Date.now();
+  const rem=boostEnd>now?Math.ceil((boostEnd-now)/3600000):0;
+  document.getElementById('spdRem').textContent=rem>0?rem+'시간 남음':'없음';
+  document.getElementById('spdBtn').disabled=rem>=2;
+  showM('speedM');
+}
+function doSpeed(){
+  closeM('speedM');boost=2;
+  const now=Date.now(),rem=boostEnd>now?boostEnd-now:0;
+  boostEnd=Math.min(now+rem+3600000,now+7200000);
+  toast('⚡ 속도 ×2!');
+}
+
+// ── 봉투 배너 ──
+function doEnvAd(){bag=Math.min(bag+1,MAX_BAG);envPtcl();flt('+1봉투',window.innerWidth/2,window.innerHeight*.4);toast('✉️ 수금가방 +1장!');}
+
+// ── 색상 ──
+function selCol(i){ci=i;for(let j=0;j<5;j++)document.getElementById('col'+j).classList.toggle('sel',j===i);}
+function selLc(i){lci=i;for(let j=0;j<5;j++)document.getElementById('lc'+j).classList.toggle('sel',j===i);}
+
+// ── 이름 제한 ──
+function limitName(inp){
+  const v=inp.value;
+  const hasKor=/[가-힣]/.test(v);
+  if(hasKor){let r='',k=0;for(const c of v){if(/[가-힣]/.test(c)){if(k<4){r+=c;k++;}}else r+=c;}inp.value=r;}
+  else{if(v.length>8)inp.value=v.slice(0,8);}
+}
+
+// ── 증축 ──
+function showUpgM(){
+  if(lvi>=5)return;
+  const cur=lv(),nxt=LVS[lvi];
+  document.getElementById('upgMtitle').textContent=nxt.name+josa(nxt.name)+' 증축하기 🏗️';
+  document.getElementById('upgCostSpan').textContent=cur.upgCost;
+  document.getElementById('upgCurSpd').textContent='×'+cur.spd.toFixed(2);
+  document.getElementById('upgNxtSpd').textContent='×'+nxt.spd.toFixed(2);
+  document.getElementById('upgNeed').textContent=cur.upgCost+'장';
+  document.getElementById('upgMy').textContent=vault.toFixed(3)+'장';
+  document.getElementById('upgConfirm').disabled=vault<cur.upgCost;
+  document.getElementById('colorWrap').style.display=lvi===3?'block':'none';
+  document.getElementById('lmWrap').style.display=lvi===4?'block':'none';
+  showM('upgM');
+}
+function doUpg(){
+  const cur=lv();
+  if(vault<cur.upgCost){toast('금고 봉투가 부족해요');return;}
+  vault-=cur.upgCost;lvi++;
+  LVS.forEach(l=>{const g=document.getElementById(l.svgId);if(g)g.style.display=l.lv===lvi?'block':'none';});
+  if(lvi===4){const c=LV4C[ci];[['l4body',c.body],['l4top',c.top],['l4lobby',c.lobby]].forEach(([id,f])=>{const e=document.getElementById(id);if(e)e.setAttribute('fill',f);});}
+  if(lvi===5){
+    const col=LV5C[lci];
+    const b=document.getElementById('l5body');if(b)b.setAttribute('fill',col);
+    const t=document.getElementById('l5top');if(t)t.setAttribute('fill',col==='#212121'?'#000':col);
+    const nm=document.getElementById('bldName');
+    if(nm&&nm.value.trim()){const el=document.getElementById('l5name');if(el)el.textContent=nm.value.trim().toUpperCase().slice(0,8);}
+  }
+  closeM('upgM');toast('🎉 '+lv().name+' 증축 완료!');
+}
+
+// ── 운세 ──
+function showFortuneM(){
+  // 초기화
+  document.getElementById('fbox').style.display='none';
+  document.getElementById('fcloseRow').style.display='none';
+  document.getElementById('fbtns').style.display='block';
+  document.getElementById('ffreeWrap').style.display=fUsed?'none':'block';
+  document.getElementById('fpaidWrap').style.display=fUsed?'block':'none';
+  showM('fortuneM');
+}
+function revFortune(){
+  const f=FORS[Math.floor(Math.random()*FORS.length)];
+  document.getElementById('ftxt').textContent=f.t;
+  document.getElementById('ftag').textContent=f.tag;
+  document.getElementById('fbox').style.display='block';
+  document.getElementById('fbtns').style.display='none';
+  document.getElementById('fcloseRow').style.display='block'; // 결과 후 닫기
+  document.getElementById('fortuneCst').textContent='봉투 1개 또는 광고';
+}
+function doFortuneFree(){fUsed=true;revFortune();}
+function doFortuneEnv(){if(vault<1){toast('금고 봉투 1장 필요');return;}vault-=1;revFortune();}
+function doFortuneAd(){revFortune();toast('📺 광고 완료!');}
+
+// ── 환전 ──
+function showExM(){
+  const vaultInt=Math.floor(vault); // 금고도 정수만 의미있음
+  const used=Math.floor(vaultInt/10)*10;
+  document.getElementById('exMy').textContent=vaultInt+'장';
+  document.getElementById('exRem').textContent=(vaultInt-used)+'장';
+  document.getElementById('exPts').textContent=used+'원';
+  document.getElementById('exBtn').disabled=vaultInt<10;
+  document.getElementById('exFeel').textContent=firstEx?'🏢 건물주님의 첫 수익이에요!':EX_FEELS[Math.floor(Math.random()*EX_FEELS.length)];
+  showM('exM');
+}
+function doEx(){
+  const vaultInt=Math.floor(vault);
+  if(vaultInt<10){toast('봉투 10장 이상 필요');return;}
+  const used=Math.floor(vaultInt/10)*10;
+  vault-=used;firstEx=false;
+  closeM('exM');toast('💳 토스포인트 '+used+'원 전환!');
+}
+
+// ── 유틸 ──
+function josa(n){const c=n.charCodeAt(n.length-1);if(c<0xAC00||c>0xD7A3)return '으로';return(c-0xAC00)%28===0?'로':'으로';}
+function showShareM(){showM('shareM');}
+function doShare(type){closeM('shareM');vault+=3;toast('🎉 공유 완료! 친구 첫 실행 시 봉투 3장 지급');}
+function showM(id){document.getElementById(id).classList.add('show');}
+function closeM(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');}));
+
+function envPtcl(){
+  const bag=document.querySelector('.bag-vis');
+  if(!bag)return;
+  const r=bag.getBoundingClientRect();
+  ['✉️','✉️'].forEach((em,i)=>{
+    const el=document.createElement('div');el.className='ptcl';el.textContent=em;
+    el.style.left=(r.left+r.width/2+Math.random()*20-10)+'px';
+    el.style.top=(r.top+window.scrollY-10)+'px';
+    el.style.animationDelay=(i*.1)+'s';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+  });
+}
+let _tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2300);}
+function flt(txt,x,y){const el=document.createElement('div');el.className='flt';el.textContent=txt;el.style.left=(x||200)+'px';el.style.top=((y||300)+window.scrollY-40)+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}
+
+// ── 초기화 ──
+setTime();
+LVS.forEach(l=>{const g=document.getElementById(l.svgId);if(g)g.style.display=l.lv===1?'block':'none';});
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
